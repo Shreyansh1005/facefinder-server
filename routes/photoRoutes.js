@@ -1,55 +1,78 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
+
+const cloudinary =
+  require("../config/cloudinary");
+
+const { CloudinaryStorage } =
+  require("multer-storage-cloudinary");
+
 const Photo = require("../models/Photo");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
 
-const upload = multer({ storage: storage });
+// ---------- storage ----------
+
+const storage =
+  new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "facefinder",
+      allowed_formats: ["jpg","png","jpeg"],
+    },
+  });
+
+const upload =
+  multer({ storage });
+
+
+// ---------- upload ----------
 
 router.post(
   "/upload",
   upload.single("image"),
-  async (req, res) => {
-    try {
+  async (req,res)=>{
 
-      let descriptor = [];
+    try{
 
-      if (req.body.descriptor) {
-        descriptor = JSON.parse(req.body.descriptor);
-      }
+      const imageUrl =
+        req.file.path;
 
-      const photo = new Photo({
-        imagePath: req.file.path,
-        descriptor: descriptor,
-      });
+      const descriptor =
+        JSON.parse(
+          req.body.descriptor
+        );
 
-      await photo.save();
+      const photo =
+        await Photo.create({
+          imageUrl,
+          descriptor
+        });
 
       res.json(photo);
 
-    } catch (err) {
-      console.log(err);
+    }catch(err){
+
+      res.status(500).json(err);
+
     }
+
   }
 );
-router.get("/photos", async (req, res) => {
-  try {
 
-    const photos = await Photo.find();
+
+// ---------- get ----------
+
+router.get(
+  "/photos",
+  async (req,res)=>{
+
+    const photos =
+      await Photo.find();
 
     res.json(photos);
 
-  } catch (err) {
-    console.log(err);
   }
-});
+);
 
 module.exports = router;

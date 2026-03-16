@@ -1,8 +1,16 @@
-const mongoose = require("mongoose");
+const mongoose =
+  require("mongoose");
 
-const photoSchema = new mongoose.Schema({
-  imagePath: String,
-  descriptor: [Number],
-});
+const PhotoSchema =
+  new mongoose.Schema({
 
-module.exports = mongoose.model("Photo", photoSchema);
+    imageUrl: String,
+    descriptor: [Number]
+
+  });
+
+module.exports =
+  mongoose.model(
+    "Photo",
+    PhotoSchema
+  );
