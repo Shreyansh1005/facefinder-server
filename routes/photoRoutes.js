@@ -38,10 +38,13 @@ router.post(
       const imageUrl =
         req.file.path;
 
-      const descriptor =
-        JSON.parse(
-          req.body.descriptor
-        );
+      // descriptor optional
+      let descriptor = [];
+
+      if (req.body.descriptor) {
+        descriptor =
+          JSON.parse(req.body.descriptor);
+      }
 
       const photo =
         await Photo.create({

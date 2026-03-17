@@ -5,7 +5,10 @@ const PhotoSchema =
   new mongoose.Schema({
 
     imageUrl: String,
-    descriptor: [Number]
+    descriptor: {
+      type: [Number],
+      default: []
+    }
 
   });
 
